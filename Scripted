@@ -1,1 +1,5 @@
-c
+node{
+    stage("pull source code"){
+         git branch: 'main', url: 'https://github.com/ASHISHKHOPADE-DEVOPS/JENKINS.git'
+    }
+}
