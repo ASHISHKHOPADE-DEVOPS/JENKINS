@@ -1,0 +1,45 @@
+pipeline {
+    agent any  // Executes on any available agent (Jenkins node)
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from GitHub repository
+                git 'https://github.com/yourusername/your-java-web-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Use Maven to clean and package the application
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Deploy') {
+            environment {
+                // Define environment variables for deployment (e.g., server credentials)
+                SERVER_URL = 'http://your-deployment-server-url'
+                USERNAME = credentials('your-username')
+                PASSWORD = credentials('your-password')
+            }
+            steps {
+                // Example: Deploying to Tomcat using Cargo Plugin
+                withCredentials([usernamePassword(credentialsId: 'your-credentials-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'mvn cargo:deploy'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+            // Additional post-deployment actions or notifications
+        }
+        failure {
+            echo 'Deployment failed!'
+            // Handle failure, send notifications, etc.
+        }
+    }
+}
